@@ -4,6 +4,7 @@
 
 <@c.page>
 <@l.logout />
+<span><a href="user">All users</a></span>
 <div>
     <form method="post">
         <input type="text" name="text" placeholder="Input your message"/>

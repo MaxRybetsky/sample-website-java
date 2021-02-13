@@ -2,6 +2,7 @@ package com.example.servingwebcontent.controller;
 
 import com.example.servingwebcontent.domain.Message;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,9 +14,14 @@ import java.util.UUID;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+@Component
 public class ControllerUtils {
-    @Value("${upload.path}")
     private static String uploadPath;
+
+    @Value("${upload.path}")
+    public void setUploadPath(String uploadPath) {
+        ControllerUtils.uploadPath = uploadPath;
+    }
 
     public static Map<String, String> getErrorsMap(BindingResult bindingResult) {
         Collector<FieldError, ?, Map<String, String>> collector = Collectors.toMap(

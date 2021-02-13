@@ -77,7 +77,7 @@
 </#macro>
 
 <#macro logout>
-<form action="http://localhost:8080/logout" method="post">
+<form action="/logout" method="post">
     <button type="submit" class="btn btn-primary">Sign Out</button>
     <input type="hidden" name="_csrf" value="${_csrf.token}"/>
 </form>

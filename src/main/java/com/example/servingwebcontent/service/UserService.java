@@ -111,4 +111,14 @@ public class UserService implements UserDetailsService {
             sendEmail(user);
         }
     }
+
+    public void subscribe(User subscriber, User channel) {
+        channel.getSubscribers().add(subscriber);
+        userRepo.save(channel);
+    }
+
+    public void unsubscribe(User subscriber, User channel) {
+        channel.getSubscribers().remove(subscriber);
+        userRepo.save(channel);
+    }
 }

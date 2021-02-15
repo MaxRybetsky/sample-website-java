@@ -1,8 +1,6 @@
 <#import "parts/common.ftlh" as c>
 
-
 <@c.page>
-
 <div class="form-row mb-3">
     <form method="get" action="/main" class="form-inline">
         <input type="text" name="filter" value="${filter?ifExists}" class="form-control mr-3"

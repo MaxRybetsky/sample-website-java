@@ -4,24 +4,22 @@ import com.example.servingwebcontent.domain.Message;
 import com.example.servingwebcontent.domain.User;
 import com.example.servingwebcontent.repos.MessageRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
 @Controller
 public class MainController {
@@ -42,14 +40,17 @@ public class MainController {
 
     @GetMapping("/main")
     public String main(@RequestParam(required = false, defaultValue = "") String filter,
-                       Model model) {
-        Iterable<Message> messages;
+                       Model model,
+                       @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Page<Message> page;
         if (filter == null || "".equals(filter)) {
-            messages = messageRepo.findAll();
+            page = messageRepo.findAll(pageable);
         } else {
-            messages = messageRepo.findByTag(filter);
+            page = messageRepo.findByTag(filter, pageable);
         }
-        model.addAttribute("messages", messages);
+        model.addAttribute("page", page);
+        model.addAttribute("url", "/main");
         model.addAttribute("filter", filter);
         return "main";
     }
@@ -60,7 +61,9 @@ public class MainController {
             @Valid Message message,
             BindingResult bindingResult,
             @RequestParam("file") MultipartFile file,
-            Model model) throws IOException {
+            Model model,
+            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
+    ) throws IOException {
         message.setAuthor(user);
         if (bindingResult.hasErrors()) {
             Map<String, String> errorsMap = ControllerUtils.getErrorsMap(bindingResult);
@@ -71,8 +74,9 @@ public class MainController {
             messageRepo.save(message);
             model.addAttribute("message", null);
         }
-        Iterable<Message> messages = messageRepo.findAll();
-        model.addAttribute("messages", messages);
+        Page<Message> page = messageRepo.findAll(pageable);
+        model.addAttribute("page", page);
+        model.addAttribute("url", "/main");
         return "main";
     }
 

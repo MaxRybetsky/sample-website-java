@@ -16,8 +16,9 @@
             body = 1..page.getTotalPages()
         >
     </#if>
-    <div class="mt-3">
-        <ul class="pagination">
+    <div class="container mt-3">
+        <div class="row">
+        <ul class="pagination col justify-content-center">
             <li class="page-item disabled">
                 <a href="" class="page-link" tabindex="-1">Pages</a>
             </li>
@@ -38,7 +39,7 @@
             </#list>
         </ul>
 
-        <ul class="pagination">
+        <ul class="pagination col justify-content-center">
             <li class="page-item disabled">
                 <a href="" class="page-link" tabindex="-1">Number of notes on one page</a>
             </li>
@@ -54,5 +55,6 @@
                 </#if>
             </#list>
         </ul>
+        </div>
     </div>
 </#macro>

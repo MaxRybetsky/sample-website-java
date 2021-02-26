@@ -2,7 +2,8 @@ package com.example.servingwebcontent.controller;
 
 import com.example.servingwebcontent.domain.Message;
 import com.example.servingwebcontent.domain.User;
-import com.example.servingwebcontent.repos.MessageRepo;
+import com.example.servingwebcontent.domain.dto.MessageDto;
+import com.example.servingwebcontent.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,15 +24,8 @@ import java.util.Map;
 
 @Controller
 public class MainController {
-    private MessageRepo messageRepo;
-
-    public MainController() {
-    }
-
     @Autowired
-    public MainController(MessageRepo messageRepo) {
-        this.messageRepo = messageRepo;
-    }
+    private MessageService messageService;
 
     @GetMapping("/")
     public String greeting() {
@@ -41,14 +35,10 @@ public class MainController {
     @GetMapping("/main")
     public String main(@RequestParam(required = false, defaultValue = "") String filter,
                        Model model,
-                       @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
+                       @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
+                       @AuthenticationPrincipal User user
     ) {
-        Page<Message> page;
-        if (filter == null || "".equals(filter)) {
-            page = messageRepo.findAll(pageable);
-        } else {
-            page = messageRepo.findByTag(filter, pageable);
-        }
+        Page<MessageDto> page = messageService.messageList(pageable, filter, user);
         model.addAttribute("page", page);
         model.addAttribute("url", "/main");
         model.addAttribute("filter", filter);
@@ -71,10 +61,10 @@ public class MainController {
             model.addAttribute("message", message);
         } else {
             ControllerUtils.saveFile(message, file);
-            messageRepo.save(message);
+            messageService.save(message);
             model.addAttribute("message", null);
         }
-        Page<Message> page = messageRepo.findAll(pageable);
+        Page<MessageDto> page = messageService.findAll(pageable, user);
         model.addAttribute("page", page);
         model.addAttribute("url", "/main");
         return "main";
